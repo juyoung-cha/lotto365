@@ -1,0 +1,16 @@
+# Robots.txt for LOTTO 365 Professional
+# Allow all search engines and Google AdSense crawlers
+
+User-agent: *
+Allow: /
+
+# Google AdSense Crawler Explicit Allow
+User-agent: Mediapartners-Google
+Allow: /
+
+# Googlebot
+User-agent: Googlebot
+Allow: /
+
+# Sitemap Index
+Sitemap: https://lotto365.site/sitemap.xml

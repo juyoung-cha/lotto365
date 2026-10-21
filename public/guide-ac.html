@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로또 AC값(산술적 복잡도) 완벽 분석 가이드 | LOTTO 365 Professional</title>
+    <meta name="description" content="로또 6/45의 핵심 통계 지표인 AC값(Arithmetic Complexity)의 정의, 수학적 계산 공식, 역대 회차 통계적 분포 및 번호 조합 필터링 활용법을 상세히 해설합니다.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --accent-purple: #8b5cf6;
+            --text-main: #f1f5f9;
+        }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .premium-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+        }
+        .code-box {
+            background: #090d16;
+            border: 1px solid #334155;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-10 flex flex-col min-h-screen">
+    <div class="max-w-4xl mx-auto w-full flex-1 space-y-8">
+        <!-- 상단 네비게이션 바 -->
+        <nav class="flex items-center justify-between pb-6 border-b border-white/10">
+            <a href="/" class="flex items-center gap-2 group">
+                <span class="text-2xl group-hover:rotate-12 transition-transform">🎰</span>
+                <span class="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-pink-400 to-amber-300">
+                    LOTTO 365
+                </span>
+            </a>
+            <div class="flex items-center gap-4 text-xs font-semibold text-slate-300">
+                <a href="/" class="hover:text-violet-400 transition-colors">홈 대시보드</a>
+                <a href="/stats-history.html" class="hover:text-violet-400 transition-colors">역대 통계</a>
+                <a href="/guide-ac.html" class="text-violet-400 font-bold">통계 가이드</a>
+                <a href="/about.html" class="hover:text-violet-400 transition-colors hidden sm:inline">소개</a>
+            </div>
+        </nav>
+
+        <!-- 본문 카드 -->
+        <main class="premium-card p-6 sm:p-10 space-y-8">
+            <header class="border-b border-white/10 pb-6">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="px-3 py-1 bg-violet-500/20 text-violet-300 rounded-full text-xs font-bold">통계학 심층 리포트</span>
+                    <span class="text-xs text-slate-400">읽는 시간 약 5분</span>
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-extrabold text-white leading-tight">
+                    로또 AC값(산술적 복잡도)의 수학적 원리와 실전 분석
+                </h1>
+                <p class="text-slate-400 text-xs sm:text-sm mt-3">
+                    왜 역대 1등 당첨 번호의 85% 이상은 AC값이 7 이상 10 이하일까요? 산술적 복잡도의 모든 것을 설명합니다.
+                </p>
+            </header>
+
+            <article class="space-y-8 text-sm sm:text-base text-slate-300 leading-relaxed font-light">
+                <section class="space-y-4">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="text-violet-400">#1.</span> AC값(Arithmetic Complexity)이란 무엇인가?
+                    </h2>
+                    <p>
+                        <strong>AC값(산술적 복잡도, Arithmetic Complexity)</strong>은 복권 6개 번호 조합이 무작위(Random)에 얼마나 가까운지, 아니면 일정한 규칙적인 산술 패턴(등차수열 등)을 띄고 있는지를 계량화하는 수학적 지표입니다.
+                    </p>
+                    <p>
+                        만약 어떤 사람이 <code class="text-pink-400 font-mono">[1, 2, 3, 4, 5, 6]</code>이나 <code class="text-pink-400 font-mono">[5, 10, 15, 20, 25, 30]</code>과 같이 규칙적인 수열을 고른다면, 숫자 간의 차이값 종류가 매우 적어 AC값이 극단적으로 낮아집니다. 반면, 완전히 독립적이고 불규칙하게 흩어진 조합은 두 수 사이의 차이값(Difference)이 매우 다양해져 높은 AC값을 갖게 됩니다.
+                    </p>
+                </section>
+
+                <section class="space-y-4">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="text-violet-400">#2.</span> AC값의 정확한 계산 공식
+                    </h2>
+                    <p>
+                        로또 6/45에서 6개 번호를 오름차순으로 정렬했을 때, 서로 다른 두 번호의 차(Difference)를 모두 구합니다. 6개 번호 중에서 2개를 고르는 경우의 수는 총 조합론에 의해 <strong>15개</strong>($_{6}C_2 = 15$)입니다.
+                    </p>
+                    <div class="code-box p-4 rounded-xl text-xs sm:text-sm text-slate-200 space-y-2">
+                        <p class="text-violet-400 font-bold">수학적 공식:</p>
+                        <p class="font-mono text-emerald-400">AC = D - (N - 1)</p>
+                        <p class="text-slate-400 text-xs">
+                            • D = 6개 번호 간의 15가지 차이값 중 중복을 제거한 고유한 차이값의 총 개수<br>
+                            • N = 선택한 번호의 총 개수 (로또 6/45의 경우 N = 6, 따라서 N - 1 = 5)
+                        </p>
+                    </div>
+                    <p>
+                        따라서 로또 6/45에서 가능한 AC값의 범위는 이론상 최소 <strong>0</strong>부터 최대 <strong>10</strong>까지(15 - 5 = 10) 분포합니다.
+                    </p>
+                </section>
+
+                <section class="space-y-4">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="text-violet-400">#3.</span> 역대 1등 당첨 번호의 AC값 분포 통계
+                    </h2>
+                    <p>
+                        동행복권 1회부터 현재 1,100회차 이상의 역대 1등 당첨 번호 데이터를 집계하여 AC값별 출현 빈도를 분석하면 매우 놀라운 정규분포 특성이 나타납니다:
+                    </p>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs sm:text-sm border-collapse bg-slate-900/60 rounded-xl overflow-hidden">
+                            <thead>
+                                <tr class="border-b border-white/10 bg-slate-800/50 text-slate-300">
+                                    <th class="p-3">AC값</th>
+                                    <th class="p-3">조합 복잡도 특성</th>
+                                    <th class="p-3">역대 출현 비율 (대략)</th>
+                                    <th class="p-3">패턴 평가</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                <tr>
+                                    <td class="p-3 font-bold text-pink-400">0 ~ 5</td>
+                                    <td class="p-3">극단적인 규칙성 / 등차수열</td>
+                                    <td class="p-3 text-slate-400">3% 미만</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 bg-red-500/20 text-red-300 rounded text-xs">극히 희귀</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-amber-400">6</td>
+                                    <td class="p-3">낮은 복잡도 / 다수 연속번호</td>
+                                    <td class="p-3 text-slate-400">약 8 ~ 10%</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded text-xs">주의 구간</span></td>
+                                </tr>
+                                <tr class="bg-violet-900/20">
+                                    <td class="p-3 font-bold text-emerald-400">7 ~ 9</td>
+                                    <td class="p-3 font-semibold text-white">가장 이상적인 무작위 분포</td>
+                                    <td class="p-3 font-bold text-emerald-300">약 75 ~ 80%</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-xs font-bold">최대 빈도</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold text-violet-300">10</td>
+                                    <td class="p-3">완전한 분산 (차이값 중복 0)</td>
+                                    <td class="p-3 text-slate-400">약 10 ~ 12%</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded text-xs">정상 구간</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-xs text-slate-400">
+                        * 통계적 시사점: AC값이 7 미만인 조합은 전체 확률 공간에서 차지하는 비중 자체가 매우 적습니다. 따라서 무작위 추출 시 AC값이 7 이상인지 확인하는 것이 통계학적으로 균형 잡힌 조합을 고르는 기본 필터링 원리입니다.
+                    </p>
+                </section>
+
+                <section class="space-y-4">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="text-violet-400">#4.</span> LOTTO 365 시뮬레이터 적용 원리
+                    </h2>
+                    <p>
+                        저희 <strong>LOTTO 365 Professional</strong>의 번호 추천 엔진 중 <strong>"AC법칙 모드"</strong>는 추출된 조합의 두 수 간 차이 15개를 실시간 연산하여, AC값이 7 이상 10 이하에 해당하는 자연스러운 통계적 조합만을 엄선하여 사용자에게 제시합니다.
+                    </p>
+                    <p>
+                        이를 통해 비정상적으로 쏠린 등차 조합(예: 3, 6, 9, 12, 15, 18 등)을 사전에 배제하고, 수학적으로 가장 건전하고 정규분포에 부합하는 조합을 경험해 보실 수 있습니다.
+                    </p>
+                </section>
+            </article>
+
+            <!-- 가이드 목록 링크 -->
+            <div class="border-t border-white/10 pt-6 mt-8 flex flex-wrap gap-4 items-center justify-between">
+                <a href="/guide-patterns.html" class="text-xs font-bold text-violet-400 hover:text-violet-300 flex items-center gap-1">
+                    <span>다음 칼럼: 홀짝 및 고저 비율의 정규분포 분석 →</span>
+                </a>
+                <a href="/" class="text-xs font-bold text-slate-400 hover:text-white">
+                    ← 홈 대시보드로 돌아가기
+                </a>
+            </div>
+        </main>
+
+        <!-- 공통 푸터 -->
+        <footer class="text-center py-6 text-xs text-slate-500 space-y-2 border-t border-white/5">
+            <div class="flex justify-center flex-wrap gap-4 font-semibold">
+                <a href="/about.html" class="hover:text-slate-300 transition-colors">서비스 소개</a>
+                <a href="/privacy.html" class="hover:text-slate-300 transition-colors">개인정보처리방침</a>
+                <a href="/terms.html" class="hover:text-slate-300 transition-colors">이용약관</a>
+                <a href="/disclaimer.html" class="hover:text-slate-300 transition-colors">면책조항</a>
+            </div>
+            <p>© 2026 LOTTO 365 Lab. All Rights Reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

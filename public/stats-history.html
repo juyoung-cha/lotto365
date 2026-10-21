@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>역대 회차별 통계 분석 리포트 아카이브 | LOTTO 365 Professional</title>
+    <meta name="description" content="동행복권 로또 6/45 역대 회차별 공식 당첨 번호, 1등 당첨금, 홀짝/고저 비율, 총합, AC값 통계 분석 데이터를 일목요연하게 조회할 수 있는 통계 아카이브입니다.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --text-main: #f1f5f9;
+        }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .premium-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+        }
+        .mini-ball {
+            width: 30px; height: 30px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.8rem; color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .ball-y { background: radial-gradient(circle at 35% 35%, #fbbf24, #d97706); }
+        .ball-b { background: radial-gradient(circle at 35% 35%, #60a5fa, #2563eb); }
+        .ball-r { background: radial-gradient(circle at 35% 35%, #f87171, #dc2626); }
+        .ball-g { background: radial-gradient(circle at 35% 35%, #9ca3af, #4b5563); }
+        .ball-v { background: radial-gradient(circle at 35% 35%, #4ade80, #16a34a); }
+        input, select { background: #0f172a !important; border: 1px solid #334155 !important; color: white !important; }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-10 flex flex-col min-h-screen">
+    <div id="app" class="max-w-5xl mx-auto w-full flex-1 space-y-8">
+        <!-- 상단 네비게이션 바 -->
+        <nav class="flex items-center justify-between pb-6 border-b border-white/10">
+            <a href="/" class="flex items-center gap-2 group">
+                <span class="text-2xl group-hover:rotate-12 transition-transform">🎰</span>
+                <span class="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-pink-400 to-amber-300">
+                    LOTTO 365
+                </span>
+            </a>
+            <div class="flex items-center gap-4 text-xs font-semibold text-slate-300">
+                <a href="/" class="hover:text-violet-400 transition-colors">홈 대시보드</a>
+                <a href="/stats-history.html" class="text-violet-400 font-bold">역대 통계</a>
+                <a href="/guide-ac.html" class="hover:text-violet-400 transition-colors">통계 가이드</a>
+                <a href="/about.html" class="hover:text-violet-400 transition-colors hidden sm:inline">소개</a>
+            </div>
+        </nav>
+
+        <!-- 헤더 섹션 -->
+        <header class="text-center sm:text-left space-y-3">
+            <div class="inline-block px-3 py-1 bg-violet-500/20 text-violet-300 rounded-full text-xs font-bold">Data Archive</div>
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-white">역대 회차별 통계 분석 리포트</h1>
+            <p class="text-slate-400 text-xs sm:text-sm max-w-3xl leading-relaxed">
+                동행복권 1회부터 최신 회차까지 전 회차의 공식 당첨 번호 및 세부 8대 통계 지표(홀짝, 고저, 총합, AC값)를 정밀 분석하여 아카이브 형태로 제공합니다.
+            </p>
+        </header>
+
+        <!-- 검색 및 필터 컨트롤 -->
+        <section class="premium-card p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="w-full sm:w-auto flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-400">회차 검색:</span>
+                    <input type="number" v-model.number="searchRound" placeholder="예: 1150" class="h-10 px-3 rounded-lg text-sm w-32 font-bold">
+                    <button @click="clearSearch" v-if="searchRound" class="text-xs text-slate-400 hover:text-white px-2">초기화</button>
+                </div>
+                <div class="text-xs text-slate-400 font-medium">
+                    총 <strong class="text-violet-400">{{ filteredList.length }}</strong>개 회차 데이터 분석 완료
+                </div>
+            </div>
+        </section>
+
+        <!-- 회차 데이터 테이블 -->
+        <main class="premium-card overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs sm:text-sm border-collapse">
+                    <thead>
+                        <tr class="border-b border-white/10 bg-slate-900/80 text-slate-400 uppercase tracking-wider font-bold">
+                            <th class="p-4">회차 / 추첨일</th>
+                            <th class="p-4">당첨 번호 + 보너스</th>
+                            <th class="p-4 text-center">홀:짝</th>
+                            <th class="p-4 text-center">고:저</th>
+                            <th class="p-4 text-center">총합</th>
+                            <th class="p-4 text-center">AC값</th>
+                            <th class="p-4 text-right">1등 당첨금 (1인)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        <tr v-for="r in paginatedList" :key="r.round" class="hover:bg-slate-800/40 transition-colors">
+                            <td class="p-4 whitespace-nowrap">
+                                <span class="font-extrabold text-white text-sm sm:text-base">제 {{ r.round }}회</span>
+                                <p class="text-[11px] text-slate-500 mt-0.5">{{ r.date }}</p>
+                            </td>
+                            <td class="p-4 whitespace-nowrap">
+                                <div class="flex items-center gap-1.5">
+                                    <span :class="getBallClass(r.num1)" class="mini-ball">{{ r.num1 }}</span>
+                                    <span :class="getBallClass(r.num2)" class="mini-ball">{{ r.num2 }}</span>
+                                    <span :class="getBallClass(r.num3)" class="mini-ball">{{ r.num3 }}</span>
+                                    <span :class="getBallClass(r.num4)" class="mini-ball">{{ r.num4 }}</span>
+                                    <span :class="getBallClass(r.num5)" class="mini-ball">{{ r.num5 }}</span>
+                                    <span :class="getBallClass(r.num6)" class="mini-ball">{{ r.num6 }}</span>
+                                    <span class="text-slate-600 font-bold px-1">+</span>
+                                    <span :class="getBallClass(r.bonus)" class="mini-ball ring-1 ring-violet-400">{{ r.bonus }}</span>
+                                </div>
+                            </td>
+                            <td class="p-4 text-center font-bold text-slate-300 whitespace-nowrap">
+                                {{ getOddEven(r) }}
+                            </td>
+                            <td class="p-4 text-center font-bold text-slate-300 whitespace-nowrap">
+                                {{ getHighLow(r) }}
+                            </td>
+                            <td class="p-4 text-center font-mono font-bold text-pink-400 whitespace-nowrap">
+                                {{ getSum(r) }}
+                            </td>
+                            <td class="p-4 text-center font-mono font-bold text-emerald-400 whitespace-nowrap">
+                                {{ getAC(r) }}
+                            </td>
+                            <td class="p-4 text-right font-bold text-amber-300 whitespace-nowrap">
+                                {{ formatCurrency(r.firstPrize) }}
+                            </td>
+                        </tr>
+                        <tr v-if="loading">
+                            <td colspan="7" class="p-8 text-center text-slate-400 animate-pulse">
+                                동행복권 통계 데이터 로딩 중...
+                            </td>
+                        </tr>
+                        <tr v-if="!loading && filteredList.length === 0">
+                            <td colspan="7" class="p-8 text-center text-slate-500">
+                                검색 조건에 일치하는 회차 데이터가 없습니다.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이지네이션 컨트롤 -->
+            <div class="p-4 border-t border-white/10 flex items-center justify-between gap-4 text-xs">
+                <button @click="prevPage" :disabled="currentPage === 1" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed">
+                    이전 페이지
+                </button>
+                <span class="text-slate-400 font-medium">
+                    페이지 <strong class="text-white">{{ currentPage }}</strong> / {{ totalPages }}
+                </span>
+                <button @click="nextPage" :disabled="currentPage >= totalPages" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed">
+                    다음 페이지
+                </button>
+            </div>
+        </main>
+
+        <!-- 학술 해설 안내문 -->
+        <section class="premium-card p-6 sm:p-8 space-y-4 text-xs sm:text-sm text-slate-400 leading-relaxed">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span>📚</span> 통계 데이터 해석 가이드
+            </h3>
+            <p>
+                본 아카이브는 동행복권의 공공 데이터를 기반으로 매 회차 실시간 정밀 연산된 <strong>AC값(산술적 복잡도), 홀짝비, 고저비, 번호 총합</strong> 등의 지표를 제공합니다. 각 지표의 세부 정의와 수학적 증명은 상단 <a href="/guide-ac.html" class="text-violet-400 underline font-semibold">통계 가이드</a> 칼럼에서 상세히 확인하실 수 있습니다.
+            </p>
+        </section>
+
+        <!-- 공통 푸터 -->
+        <footer class="text-center py-6 text-xs text-slate-500 space-y-2 border-t border-white/5">
+            <div class="flex justify-center flex-wrap gap-4 font-semibold">
+                <a href="/about.html" class="hover:text-slate-300 transition-colors">서비스 소개</a>
+                <a href="/privacy.html" class="hover:text-slate-300 transition-colors">개인정보처리방침</a>
+                <a href="/terms.html" class="hover:text-slate-300 transition-colors">이용약관</a>
+                <a href="/disclaimer.html" class="hover:text-slate-300 transition-colors">면책조항</a>
+            </div>
+            <p>© 2026 LOTTO 365 Lab. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    loading: true,
+                    allRounds: [],
+                    searchRound: null,
+                    currentPage: 1,
+                    pageSize: 15
+                }
+            },
+            computed: {
+                filteredList() {
+                    if (!this.searchRound) return this.allRounds;
+                    return this.allRounds.filter(r => r.round === this.searchRound);
+                },
+                totalPages() {
+                    return Math.max(1, Math.ceil(this.filteredList.length / this.pageSize));
+                },
+                paginatedList() {
+                    const start = (this.currentPage - 1) * this.pageSize;
+                    return this.filteredList.slice(start, start + this.pageSize);
+                }
+            },
+            methods: {
+                async loadData() {
+                    this.loading = true;
+                    try {
+                        const res = await fetch('/api/lotto');
+                        const json = await res.json();
+                        const list = json.data || [];
+                        // 최신 회차가 상단에 오도록 역순 정렬
+                        this.allRounds = [...list].reverse();
+                    } catch (e) {
+                        console.error('데이터 로드 실패:', e);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                clearSearch() {
+                    this.searchRound = null;
+                    this.currentPage = 1;
+                },
+                prevPage() {
+                    if (this.currentPage > 1) this.currentPage--;
+                },
+                nextPage() {
+                    if (this.currentPage < this.totalPages) this.currentPage++;
+                },
+                getBallClass(n) {
+                    if (!n) return 'bg-slate-700';
+                    if (n <= 10) return 'ball-y';
+                    if (n <= 20) return 'ball-b';
+                    if (n <= 30) return 'ball-r';
+                    if (n <= 40) return 'ball-g';
+                    return 'ball-v';
+                },
+                getOddEven(r) {
+                    const nums = [r.num1, r.num2, r.num3, r.num4, r.num5, r.num6];
+                    const odds = nums.filter(n => n % 2 !== 0).length;
+                    return `${odds}:${6 - odds}`;
+                },
+                getHighLow(r) {
+                    const nums = [r.num1, r.num2, r.num3, r.num4, r.num5, r.num6];
+                    const highs = nums.filter(n => n >= 23).length;
+                    return `${highs}:${6 - highs}`;
+                },
+                getSum(r) {
+                    return r.num1 + r.num2 + r.num3 + r.num4 + r.num5 + r.num6;
+                },
+                getAC(r) {
+                    const nums = [r.num1, r.num2, r.num3, r.num4, r.num5, r.num6].sort((a,b)=>a-b);
+                    const diffs = new Set();
+                    for(let i=0; i<nums.length; i++) {
+                        for(let j=i+1; j<nums.length; j++) {
+                            diffs.add(nums[j] - nums[i]);
+                        }
+                    }
+                    return diffs.size - 5;
+                },
+                formatCurrency(n) {
+                    if (!n || isNaN(n)) return '-';
+                    if (n >= 100000000) {
+                        return (n / 100000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '억원';
+                    }
+                    return (n).toLocaleString() + '원';
+                }
+            },
+            mounted() {
+                this.loadData();
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

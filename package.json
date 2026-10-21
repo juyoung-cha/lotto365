@@ -1,0 +1,29 @@
+{
+  "name": "lotto365",
+  "version": "2.2.0",
+  "description": "동행복권 로또 6/45 누적 당첨 기록 자동 수집기 및 전문가 AI 분석 대시보드",
+  "main": "dashboard.js",
+  "scripts": {
+    "start": "node dashboard.js",
+    "fetch": "node fetch_lotto.js",
+    "backup": "node backup.js",
+    "check": "node check_latest.js",
+    "dev": "node dashboard.js"
+  },
+  "keywords": [
+    "lotto",
+    "동행복권",
+    "로또645",
+    "대시보드",
+    "AI분석"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.14.0",
+    "express": "^5.2.1",
+    "node-cron": "^4.2.1",
+    "playwright": "^1.58.2",
+    "puppeteer": "^24.37.2"
+  }
+}

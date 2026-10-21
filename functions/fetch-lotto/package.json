@@ -1,0 +1,15 @@
+{
+    "name": "fetch-lotto",
+    "version": "1.0.0",
+    "description": "Lotto 6/45 Data Fetcher for Cloud Functions",
+    "main": "index.js",
+    "dependencies": {
+        "@google-cloud/storage": "^7.7.0",
+        "puppeteer": "^21.5.0",
+        "@google-cloud/functions-framework": "^3.3.0"
+    },
+    "scripts": {
+        "start": "functions-framework --target=fetchLotto",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    }
+}

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로또 연속번호·동일끝수·소수 통계 패턴 분석 | LOTTO 365 Professional</title>
+    <meta name="description" content="역대 로또 6/45 1등 당첨 번호에서 연속 번호쌍(Consecutive Numbers), 동일 끝수, 소수(Prime Numbers) 출현 패턴의 통계적 확률과 오해를 파헤칩니다.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --accent-purple: #8b5cf6;
+            --text-main: #f1f5f9;
+        }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .premium-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+        }
+        .highlight-box {
+            background: #090d16;
+            border: 1px solid #334155;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-10 flex flex-col min-h-screen">
+    <div class="max-w-4xl mx-auto w-full flex-1 space-y-8">
+        <!-- 상단 네비게이션 바 -->
+        <nav class="flex items-center justify-between pb-6 border-b border-white/10">
+            <a href="/" class="flex items-center gap-2 group">
+                <span class="text-2xl group-hover:rotate-12 transition-transform">🎰</span>
+                <span class="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-pink-400 to-amber-300">
+                    LOTTO 365
+                </span>
+            </a>
+            <div class="flex items-center gap-4 text-xs font-semibold text-slate-300">
+                <a href="/" class="hover:text-violet-400 transition-colors">홈 대시보드</a>
+                <a href="/stats-history.html" class="hover:text-violet-400 transition-colors">역대 통계</a>
+                <a href="/guide-consecutive.html" class="text-violet-400 font-bold">통계 가이드</a>
+                <a href="/about.html" class="hover:text-violet-400 transition-colors hidden sm:inline">소개</a>
+            </div>
+        </nav>
+
+        <!-- 본문 카드 -->
+        <main class="premium-card p-6 sm:p-10 space-y-8">
+            <header class="border-b border-white/10 pb-6">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="px-3 py-1 bg-violet-500/20 text-violet-300 rounded-full text-xs font-bold">확률통계학 리포트</span>
+                    <span class="text-xs text-slate-400">읽는 시간 약 5분</span>
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-extrabold text-white leading-tight">
+                    로또 연속번호와 동일 끝수, 소수 패턴의 진실
+                </h1>
+                <p class="text-slate-400 text-xs sm:text-sm mt-3">
+                    "연속된 번호는 잘 안 나온다"는 대중의 직관은 왜 틀렸을까요? 역대 당첨 데이터의 53% 이상에서 나타나는 연속번호의 수학적 비밀.
+                </p>
+            </header>
+
+            <article class="space-y-8 text-sm sm:text-base text-slate-300 leading-relaxed font-light">
+                <section class="space-y-4">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="text-violet-400">#1.</span> 연속번호(Consecutive Numbers)에 대한 통계학적 오해
+                    </h2>
+                    <p>
+                        많은 사람들이 번호를 선택할 때 <code class="text-pink-400 font-mono">[14, 15]</code>나 <code class="text-pink-400 font-mono">[31, 32]</code>처럼 바로 옆에 붙어 있는 연속된 숫자를 기피하곤 합니다. 직관적으로 45개의 많은 공 중에서 굳이 바로 옆 번호가 연달아 나올 확률이 매우 희박하다고 느끼기 때문입니다.
+                    </p>
+                    <p>
+                        그러나 조합론을 통해 계산해 보면, 45개 중 6개를 무작위로 뽑았을 때 <strong>연속된 번호가 최소 1쌍 이상 포함될 확률은 무려 약 52.88%</strong>에 달합니다! 즉, 동전 던지기에서 앞면이 나올 확률보다 더 빈번하게 연속번호가 출현하는 것이 정상적인 통계 법칙입니다.
+                    </p>
+                    <div class="highlight-box p-4 rounded-xl text-xs sm:text-sm space-y-2 text-slate-300">
+                        <p class="text-emerald-400 font-bold">💡 조합론적 수학 증명 (여사건의 확률):</p>
+                        <p>• 45개 숫자 중 어떤 두 숫자도 연속하지 않게 6개를 뽑는 경우의 수: <strong>40C6 = 3,838,380 가지</strong></p>
+                        <p>• 연속번호가 하나도 나오지 않을 확률: 3,838,380 / 8,145,060 ≈ <strong>47.12%</strong></p>
+                        <p>• <strong>연속번호가 1쌍 이상 나올 확률 = 1 - 0.4712 = 52.88%</strong></p>
+                    </div>
+                </section>
+
+                <section class="space-y-4">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="text-violet-400">#2.</span> 동일 끝수(Same Last Digits)와 비둘기집 원리
+                    </h2>
+                    <p>
+                        끝수란 숫자의 1의 자리를 의미합니다 (예: 13의 끝수는 3, 27의 끝수는 7). 1부터 45까지 숫자들의 끝수는 0부터 9까지 총 10가지 종류가 있습니다.
+                    </p>
+                    <p>
+                        6개의 당첨 번호가 뽑혔을 때, 6개 번호의 1의 자리가 모두 다를 확률은 약 17.5%에 불과합니다. 즉, <strong>나머지 82.5%의 회차에서는 최소 2개 이상의 번호가 동일한 끝수</strong>(예: 4와 24, 11과 31)를 공유합니다.
+                    </p>
+                    <p>
+                        실제 당첨 번호를 점검할 때, 동일한 끝수가 1쌍 내지 2쌍 정도 존재하는 것은 자연스러운 통계적 귀결입니다.
+                    </p>
+                </section>
+
+                <section class="space-y-4">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="text-violet-400">#3.</span> 소수(Prime Numbers)의 출현 기대값
+                    </h2>
+                    <p>
+                        1부터 45 사이에 존재하는 소수(1과 자기 자신만으로 나누어떨어지는 1보다 큰 자연수)는 다음과 같이 총 <strong>14개</strong>입니다:
+                    </p>
+                    <div class="highlight-box p-4 rounded-xl font-mono text-xs sm:text-sm text-pink-300">
+                        소수 집합 (14개): { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43 }
+                    </div>
+                    <p>
+                        전체 45개 번호 중 소수의 비율은 $14 / 45 \approx 31.11\%$입니다. 따라서 6개 번호를 무작위로 추출했을 때 기대할 수 있는 <strong>소수의 수학적 기대값은 $6 \times (14/45) \approx 1.87개$</strong>입니다.
+                    </p>
+                    <p>
+                        실제 역대 당첨 결과를 보면, 6개 번호 중 <strong>소수가 1개 또는 2개 포함된 조합이 전체의 약 68% 이상</strong>을 차지하며 통계적 기대값에 완벽히 수렴하고 있습니다.
+                    </p>
+                </section>
+
+                <section class="space-y-4">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="text-violet-400">#4.</span> 데이터 기반의 건전한 시뮬레이션
+                    </h2>
+                    <p>
+                        <strong>LOTTO 365 Professional</strong>은 상기 3대 세부 지표(연속번호 쌍 여부, 동일 끝수 개수, 소수 포함 수)를 매 회차 실시간으로 자동 산출하여 화면에 즉각 표시합니다.
+                    </p>
+                    <p>
+                        이러한 객관적 지표를 통해 막연한 감이나 맹신에서 벗어나, 데이터가 보여주는 수학적 특성을 관찰하고 탐구하는 유익한 시각화 경험을 제공합니다.
+                    </p>
+                </section>
+            </article>
+
+            <!-- 가이드 네비게이션 -->
+            <div class="border-t border-white/10 pt-6 mt-8 flex flex-wrap gap-4 items-center justify-between">
+                <a href="/guide-patterns.html" class="text-xs font-bold text-slate-400 hover:text-white">
+                    ← 이전 칼럼: 홀짝 및 고저 비율 분석
+                </a>
+                <a href="/stats-history.html" class="text-xs font-bold text-violet-400 hover:text-violet-300">
+                    역대 회차별 통계 분석 리포트 보러가기 →
+                </a>
+            </div>
+        </main>
+
+        <!-- 공통 푸터 -->
+        <footer class="text-center py-6 text-xs text-slate-500 space-y-2 border-t border-white/5">
+            <div class="flex justify-center flex-wrap gap-4 font-semibold">
+                <a href="/about.html" class="hover:text-slate-300 transition-colors">서비스 소개</a>
+                <a href="/privacy.html" class="hover:text-slate-300 transition-colors">개인정보처리방침</a>
+                <a href="/terms.html" class="hover:text-slate-300 transition-colors">이용약관</a>
+                <a href="/disclaimer.html" class="hover:text-slate-300 transition-colors">면책조항</a>
+            </div>
+            <p>© 2026 LOTTO 365 Lab. All Rights Reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
