@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "routes": [
+    {
+      "src": "/api/lotto",
+      "dest": "/data/lotto_all.json",
+      "headers": {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ]
+}
